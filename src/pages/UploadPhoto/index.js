@@ -1,25 +1,50 @@
-import React from 'react'
-import { Text, View, StyleSheet, Image } from 'react-native'
-import { IconAddPhoto, ILNullPhoto } from '../../assets'
+import React, { useState } from 'react'
+import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import { IconAddPhoto, IconRemovePhoto, ILNullPhoto } from '../../assets'
 import { Button, Gap, Header, Link } from '../../components'
 import { colors, fonts } from '../../utils'
+import {launchImageLibrary} from 'react-native-image-picker'
+import {showMessage} from 'react-native-flash-message'
 
-const UploadPhoto = ({navigation}) => {
+const UploadPhoto = ({navigation, route}) => {
+    const {name, kerja} = route.params
+    const [hasPhoto, setHasPhoto] = useState(false)
+    const [photo, setPhoto] = useState(ILNullPhoto)
+    const getImage = () => {
+        launchImageLibrary({}, (response) => {
+            if(response.didCancel || response.error) {
+                showMessage({
+                    message: 'Anda tidak jadi unggah foto ?',
+                    type: 'default',
+                    color: colors.white,
+                    backgroundColor: colors.error
+                })
+            } else {
+                const source = {uri: response.uri }
+                setPhoto(source )
+                setHasPhoto(true)
+            }
+        })
+    }
     return (
         <View style={styles.page}>
             <Header title={"Unggah Foto"} onPress={() => navigation.goBack()}/>
             <View style={styles.content}>
                 <View style={styles.profile}>
-                    <View style={styles.avatarWrapper}>
-                        <Image style={styles.avatar} source={ILNullPhoto} />
-                        <IconAddPhoto style={styles.addPhoto} />
-                    </View>
+                    <TouchableOpacity style={styles.avatarWrapper} onPress={getImage} >
+                        <Image style={styles.avatar} source={photo} />
+                        {
+                            hasPhoto ?
+                            <IconRemovePhoto style={styles.addPhoto} /> :
+                            <IconAddPhoto style={styles.addPhoto} />
+                        }                        
+                    </TouchableOpacity>
                     <Gap height={26} />
-                    <Text style={styles.name} >Shayna MelindaS</Text>
-                    <Text style={styles.profession} >Product designer</Text>
+                    <Text style={styles.name} >{name}</Text>
+                    <Text style={styles.profession} >{kerja}</Text>
                 </View>
                 <View>
-                    <Button title="Unggah dan Lanjutkan" onPress={() => navigation.replace('MainPage') } />
+                    <Button disable={!hasPhoto } title="Unggah dan Lanjutkan" onPress={() => navigation.replace('MainPage') } />
                     <Gap height={30} />
                     <Link title="Lewati" align={'center'} size={16} onPress={() => navigation.replace('MainPage') }/>
                 </View>
@@ -32,7 +57,7 @@ export default UploadPhoto
 
 const styles = StyleSheet.create({
     page: { flex:1, backgroundColor: colors.white},
-    avatar: {width: 110, height: 110},
+    avatar: {width: 110, height: 110, borderRadius: 110 /2},
     avatarWrapper: {
         width: 130,
         height: 130,

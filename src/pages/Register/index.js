@@ -1,14 +1,13 @@
 import React from 'react'
 import { useState } from 'react'
 import {  View, StyleSheet, ScrollView } from 'react-native'
-import { Button, Gap, Header, Input } from '../../components'
-import { colors, useForm } from '../../utils'
+import { Button, Gap, Header, Input, Loading } from '../../components'
+import { colors, storeData, useForm } from '../../utils'
+import {Fire} from '../../config'
+import { showMessage } from 'react-native-flash-message'
 
 const Register = ({navigation}) => {
-    // const [name, setNama] = useState('')
-    // const [kerja, setKerja] = useState('')
-    // const [email, setEmail] = useState('')
-    // const [password, setPassword] = useState('')
+    const [loading, setLoading] = useState(false)
 
     const [form, setForm] = useForm({
         name: '',
@@ -18,11 +17,37 @@ const Register = ({navigation}) => {
     })
 
     function onNext () {
-        
-        console.log(form);
-        // navigation.navigate('UploadPhoto')
+        setLoading(true)
+        Fire.auth()
+        .createUserWithEmailAndPassword(form.email, form.password)
+        .then((success) => {
+            setLoading(false)
+            setForm('reset')
+            const data = {
+                name: form.name,
+                kerja: form.kerja,
+                email: form.email
+            }
+            Fire
+            .database()
+            .ref('users/' +success.user.uid+ '/')
+            .set(data)
+            storeData('user', data);
+            navigation.navigate('UploadPhoto', data)
+        })
+        .catch((error) => {
+            let errorMessage = error.message;
+            setLoading(false)
+            showMessage({
+                message: errorMessage,
+                type: 'default',
+                color: colors.white,
+                backgroundColor: colors.error
+            })
+        });
     }
     return (
+        <>
         <View style={styles.page}>
             <Header onPress={() => navigation.goBack()} title='Daftar Akun' />
             <View style={styles.content} >
@@ -37,9 +62,10 @@ const Register = ({navigation}) => {
                     <Gap height={40} />
                     <Button title='Berikutnya' onPress={onNext}/>
                 </ScrollView>
-
             </View>
         </View>
+        {loading && <Loading />}
+        </>
     )
 }
 

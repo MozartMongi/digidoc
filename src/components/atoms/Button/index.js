@@ -14,7 +14,15 @@ const Button = ({type, title, onPress, icon, disable}) => {
     return (
         <IconOnly icon={icon} onPress={onPress} />
     )
-  } else {
+  } 
+  if(disable) {
+    return (
+      <View style={styles.disableBG}  >
+        <Text style={styles.disableText} >{title}</Text>
+      </View>
+    )
+  }
+  else {
     return (
       <TouchableOpacity style={styles.container(type)} onPress={onPress} >
         <Text style={styles.title(type)} >{title}</Text>
@@ -37,5 +45,16 @@ const styles = StyleSheet.create({
         fontFamily: fonts.primary[600],
         textAlign: 'center',
         color: type === 'secondary' ? colors.button.secondary.text : colors.button.primary.text
-    })
+    }),
+    disableBG : {
+      paddingVertical: 10,
+      borderRadius: 10,
+      backgroundColor: colors.disable
+    },
+    disableText: {
+      fontSize: 18,
+      fontFamily: fonts.primary[600],
+      textAlign: 'center',
+      color: colors.disableText
+    }
 })
