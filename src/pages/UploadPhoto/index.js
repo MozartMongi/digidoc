@@ -2,16 +2,18 @@ import React, { useState } from 'react'
 import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native'
 import { IconAddPhoto, IconRemovePhoto, ILNullPhoto } from '../../assets'
 import { Button, Gap, Header, Link } from '../../components'
-import { colors, fonts } from '../../utils'
+import { colors, fonts, storeData } from '../../utils'
 import {launchImageLibrary} from 'react-native-image-picker'
 import {showMessage} from 'react-native-flash-message'
+import { Fire } from '../../config'
 
 const UploadPhoto = ({navigation, route}) => {
-    const {name, kerja} = route.params
+    const {name, kerja, uid} = route.params
+    const [photoDB, setPhotoDB] = useState('')
     const [hasPhoto, setHasPhoto] = useState(false)
     const [photo, setPhoto] = useState(ILNullPhoto)
     const getImage = () => {
-        launchImageLibrary({}, (response) => {
+        launchImageLibrary({quality: 0.5, maxWidth: 200, maxHeight: 200, includeBase64: true}, (response) => {
             if(response.didCancel || response.error) {
                 showMessage({
                     message: 'Anda tidak jadi unggah foto ?',
@@ -20,11 +22,22 @@ const UploadPhoto = ({navigation, route}) => {
                     backgroundColor: colors.error
                 })
             } else {
+                console.log(response.data);
                 const source = {uri: response.uri }
+                setPhotoDB(`data:${response.type};base64, ${response.base64}`);
                 setPhoto(source )
                 setHasPhoto(true)
             }
         })
+    }
+    const unggah = () => {
+        Fire.database()
+        .ref('users/' +uid+ '/')
+        .update({photo: photoDB})
+        const data = route.params
+        data.photo = photoDB
+        storeData('user', data)
+        navigation.replace('MainPage')
     }
     return (
         <View style={styles.page}>
@@ -44,7 +57,7 @@ const UploadPhoto = ({navigation, route}) => {
                     <Text style={styles.profession} >{kerja}</Text>
                 </View>
                 <View>
-                    <Button disable={!hasPhoto } title="Unggah dan Lanjutkan" onPress={() => navigation.replace('MainPage') } />
+                    <Button disable={!hasPhoto } title="Unggah dan Lanjutkan" onPress={unggah} />
                     <Gap height={30} />
                     <Link title="Lewati" align={'center'} size={16} onPress={() => navigation.replace('MainPage') }/>
                 </View>

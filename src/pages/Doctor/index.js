@@ -6,6 +6,7 @@ import {DummyDoctor1, DummyDoctor2, DummyDoctor5, JSONCategoryDoctor} from '../.
 
 const Doctor = ({navigation}) => {
   
+  
   return (
     <View style={styles.page}>
       <View style={styles.content} >

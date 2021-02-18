@@ -1,16 +1,31 @@
-import React from 'react'
+import React, {useEffect} from 'react'
+import { useState } from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { DummyUser } from '../../../assets'
-import { colors, fonts } from '../../../utils'
+import { colors, fonts, getData } from '../../../utils'
 
 const HomeProfile = ({onPress}) => {
+    useEffect(() => {
+        getData('user')
+        .then(res => {
+            const data = res
+            data.photo = {uri: res.photo}
+            setProfile(data)
+        })
+      }, [])
+
+      const [profile, setProfile]= useState({
+          name: '',
+          kerja: '',
+          photo: DummyUser
+      })
   
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
-        <Image style={styles.avatar} source={DummyUser} />
+        <Image style={styles.avatar} source={profile.photo} />
         <View>
-            <Text style={styles.name} >Shayna Melinda</Text>
-            <Text style={styles.profession} >Product Designer</Text>
+            <Text style={styles.name} >{profile.name}</Text>
+            <Text style={styles.profession} >{profile.kerja}</Text>
         </View>
     </TouchableOpacity>
   )
@@ -31,11 +46,13 @@ const styles = StyleSheet.create({
     name: {
         fontSize: 16,
         fontFamily: fonts.primary[600],
-        color: colors.text.primary
+        color: colors.text.primary,
+        textTransform: 'capitalize'
     },
     profession : {
         fontSize: 12,
         fontFamily: fonts.primary[400],
-        color: colors.text.secondary
+        color: colors.text.secondary,
+        textTransform: 'capitalize'
     }
 })
