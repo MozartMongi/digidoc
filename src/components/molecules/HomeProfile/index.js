@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import { useState } from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { DummyUser } from '../../../assets'
+import { DummyUser, ILNullPhoto } from '../../../assets'
 import { colors, fonts, getData } from '../../../utils'
 
 const HomeProfile = ({onPress}) => {
@@ -17,7 +17,7 @@ const HomeProfile = ({onPress}) => {
       const [profile, setProfile]= useState({
           name: '',
           kerja: '',
-          photo: DummyUser
+          photo: ILNullPhoto
       })
   
   return (
