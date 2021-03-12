@@ -3,17 +3,18 @@ import { StyleSheet,View,Text } from 'react-native'
 import { Button, Gap, Header, Profile, ProfileItem } from '../../components'
 import { colors } from '../../utils'
 
-const DoctorProfile = ({navigation}) => {
+const DoctorProfile = ({navigation, route}) => {
+    const doc = route.params
     return (
         <View style={styles.page}>
             <Header title='Profil Dokter' onPress={() => navigation.goBack()} />
-            <Profile name={'Alexa Rachel'} desc={'Pediatrician'} />
+            <Profile name={doc.data.fullName} desc={doc.data.profession} photo={{uri: doc.data.photo}} />
             <Gap height={10} />
-            <ProfileItem label={'Alumnus'} value={'Universitas Indonesia, 2020'} />
-            <ProfileItem label={'Tempat Praktik'} value={'Rumah Sakit Umum, Bandung'} />
-            <ProfileItem label={'No. STR'} value={'0000116622081996'} />
+            <ProfileItem label={'Alumnus'} value={doc.data.university} />
+            <ProfileItem label={'Tempat Praktik'} value={doc.data.hospital_address} />
+            <ProfileItem label={'No. STR'} value={doc.data.str_number} />
             <View style={styles.action}>
-                <Button title={'Mulai Konsultasi'} onPress={() => navigation.navigate('Chatting')} />
+                <Button title={'Mulai Konsultasi'} onPress={() => navigation.navigate('Chatting', doc)} />
             </View>
         </View>
     )

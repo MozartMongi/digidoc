@@ -2,9 +2,8 @@ import React from 'react'
 import { useState } from 'react'
 import {  View, StyleSheet, ScrollView } from 'react-native'
 import { Button, Gap, Header, Input, Loading } from '../../components'
-import { colors, storeData, useForm } from '../../utils'
+import { colors, storeData, useForm, errorMsg } from '../../utils'
 import {Fire} from '../../config'
-import { showMessage } from 'react-native-flash-message'
 
 const Register = ({navigation}) => {
     const [loading, setLoading] = useState(false)
@@ -39,12 +38,7 @@ const Register = ({navigation}) => {
         .catch((error) => {
             let errorMessage = error.message;
             setLoading(false)
-            showMessage({
-                message: errorMessage,
-                type: 'default',
-                color: colors.white,
-                backgroundColor: colors.error
-            })
+            errorMsg(errorMessage)
         });
     }
     return (
